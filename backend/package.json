@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node src/app.js",
+  "dev": "nodemon src/app.js",
+  "db:generate": "npx prisma generate",
+  "db:migrate": "npx prisma migrate dev --name init",
+  "db:studio": "npx prisma studio"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
