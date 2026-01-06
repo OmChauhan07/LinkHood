@@ -1,0 +1,36 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?  @unique
+  karma     Int      @default(0)
+  items     Item[]
+  createdAt DateTime @default(now())
+}
+
+model Item {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  category    String   // e.g., "Tools", "Kitchen", "Baby Gear"
+  isAvailable Boolean  @default(true)
+  
+  // PostGIS location point
+  location    Unsupported("geography(Point, 4326)") 
+  
+  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId     String
+  createdAt   DateTime @default(now())
+
+  @@index([location], name: "location_idx", type: Gist)
+}
