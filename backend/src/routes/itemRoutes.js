@@ -2,7 +2,10 @@ const express = require('express');
 const router = express.Router();
 const itemController = require('../controllers/itemController');
 
-// URL will be: GET /api/items/nearby?lat=...&lng=...
+// Existing nearby route
 router.get('/nearby', itemController.getItemsNearMe);
+
+// NEW: Route to post an item
+router.post('/post', itemController.createItem);
 
 module.exports = router;

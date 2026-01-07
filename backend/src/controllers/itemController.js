@@ -1,12 +1,34 @@
 const prisma = require('../services/prisma');
-// const { getNearbyItems } = require('@prisma/client/sql'); // Import the typed query - Temporarily disabled
 
-const getItemsNearMe = async (req, res) => {
-  // We get the user's GPS coords from the request
-  const { lat, lng, radius = 1000 } = req.query; 
+const createItem = async (req, res) => {
+  const { title, description, category, lat, lng, ownerId } = req.body;
 
   try {
-    // Execute the raw SQL query directly as a workaround
+    // We use $executeRaw to handle the PostGIS geometry point correctly
+    await prisma.$executeRaw`
+      INSERT INTO "Item" (id, title, description, category, location, "ownerId", "createdAt")
+      VALUES (
+        gen_random_uuid(), 
+        ${title}, 
+        ${description}, 
+        ${category}, 
+        ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)::geography, 
+        ${ownerId}, 
+        NOW()
+      )
+    `;
+
+    res.status(201).json({ success: true, message: "Item posted to the hood! 🛠️" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Could not post item. Check your coordinates." });
+  }
+};
+
+const getItemsNearMe = async (req, res) => {
+  const { lat, lng, radius = 1000 } = req.query;
+
+  try {
     const items = await prisma.$queryRaw`
       SELECT 
         id, 
@@ -25,4 +47,7 @@ const getItemsNearMe = async (req, res) => {
   }
 };
 
-module.exports = { getItemsNearMe };
+module.exports = { 
+  createItem, 
+  getItemsNearMe
+};
