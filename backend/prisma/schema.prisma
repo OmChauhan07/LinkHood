@@ -2,10 +2,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "typedSql"] // 
 }
 
 datasource db {
   provider = "postgresql"
+  extensions = [postgis] //
 }
 
 model User {
