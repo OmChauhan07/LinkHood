@@ -52,8 +52,8 @@ class _SplashScreenState extends State<SplashScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.deepPurple.shade900,
-              Colors.deepPurple.shade600,
+              Colors.white,
+              Colors.grey.shade50,
             ],
           ),
         ),
@@ -61,30 +61,53 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo
-              Image.asset(
-                'assets/icon/icon.png',
-                width: 150,
-                height: 150,
+              // Logo with shadow effect
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Image.asset(
+                  'assets/icon/icon.png',
+                  width: 200,
+                  height: 200,
+                ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               // App Title
               const Text(
                 'LinkHood',
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF2C3E50),
+                  letterSpacing: 1.5,
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 10),
+              // Tagline
+              const Text(
+                'Connect with Your Community',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF7F8C8D),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 60),
               // Loading indicator
               const SizedBox(
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  strokeWidth: 3,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF3498DB)),
+                  strokeWidth: 4,
                 ),
               ),
             ],
