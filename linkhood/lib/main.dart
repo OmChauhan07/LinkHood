@@ -130,19 +130,46 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Welcome to LinkHood!'),
-            const SizedBox(height: 20),
+            // Logo with Welcome text overlaid
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Logo
+                Image.asset(
+                  'assets/icon/icon.png',
+                  width: 180,
+                  height: 180,
+                ),
+                // Welcome text overlaid on the logo
+                Positioned(
+                  bottom: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.95),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'Welcome to LinkHood!',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2C3E50),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 60),
             ElevatedButton(
               onPressed: () {
                 // Add your navigation logic here
