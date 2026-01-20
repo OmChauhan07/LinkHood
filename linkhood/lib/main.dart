@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'pages/welcome_page.dart';
+import 'pages/login_page.dart';
+import 'pages/signup_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +21,12 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
+      routes: {
+        '/welcome': (context) => const WelcomePage(),
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignupPage(),
+        '/home': (context) => const HomePage(),
+      },
     );
   }
 }
@@ -33,12 +42,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Navigate to home screen after 3 seconds
+    // Navigate to welcome screen after 3 seconds
     Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
+        Navigator.of(context).pushReplacementNamed('/welcome');
       }
     });
   }
