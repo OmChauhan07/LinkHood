@@ -12,20 +12,10 @@ A high-performance geospatial and real-time API built to power the LinkHood ecos
 * Real-time: Socket.io Redis Adapter (for scalability)
 * Tools: Nodemon, Dotenv, Postman
 
-## File Structure:
 
-linkhood-backend/
-├── prisma/
-│   ├── schema.prisma        # User, Item, and Alert models
-│   └── sql/                
-│       └── getNearbyItems.sql  # Spatial query for proximity search
-├── src/
-│   ├── controllers/         # Business logic (Items, Users, Alerts)
-│   ├── routes/              # HTTP API Endpoints
-│   ├── services/           
-│   │   ├── prisma.js        # Singleton Database client
-│   │   └── supabase.js      # Admin SDK for Storage/Auth
-│   └── app.js               # Entry point & Server config
-├── .env                     # Secrets & DB Connection strings
-├── .gitignore               # Standard Node.js ignore rules
-└── package.json             # Scripts & dependencies
+## Key Features:
+
+* Hyperlocal Search: Find items within 500m - 1km of your location.
+* Trust-Based Profiles: Karma-driven user accounts for verified sharing.
+* Geofenced Posting: Items are tagged with precise GPS coordinates.
+* Mutual Aid: Instant alerts for emergency neighborhood support.
