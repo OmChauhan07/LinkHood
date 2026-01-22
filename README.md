@@ -19,3 +19,5 @@ A high-performance geospatial and real-time API built to power the LinkHood ecos
 * Trust-Based Profiles: Karma-driven user accounts for verified sharing.
 * Geofenced Posting: Items are tagged with precise GPS coordinates.
 * Mutual Aid: Instant alerts for emergency neighborhood support.
+
+nothing
