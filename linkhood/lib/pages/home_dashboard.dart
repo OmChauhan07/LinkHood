@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'search_page.dart';
+import 'add_page.dart';
+import 'inbox_page.dart';
+import 'profile_page.dart';
+
 class HomeDashboardPage extends StatefulWidget {
   const HomeDashboardPage({super.key});
 
@@ -78,10 +83,214 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
     );
   }
 
+  Widget _buildBody() {
+    switch (_currentIndex) {
+      case 1:
+        return const SearchPage();
+      case 2:
+        return const AddPage();
+      case 3:
+        return const InboxPage();
+      case 4:
+        return const ProfilePage();
+      default:
+        return _buildHomeContent();
+    }
+  }
+
+  Widget _buildHomeContent() {
+    final theme = Theme.of(context);
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6C63FF), Color(0xFF9C8CFF)],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Good evening,',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white70,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Ready to explore your neighborhood?',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () {},
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF6C63FF),
+                      ),
+                      child: const Text('Discover now'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: Colors.white.withOpacity(0.2),
+                child: const Icon(
+                  Icons.explore,
+                  size: 32,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          decoration: InputDecoration(
+            hintText: 'Search nearby items, people, or events',
+            prefixIcon: const Icon(Icons.search),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Your activity'),
+        const SizedBox(height: 12),
+        Row(
+          children: const [
+            Expanded(
+              child: _StatCard(
+                title: 'Items shared',
+                value: '12',
+                icon: Icons.inventory_2_outlined,
+              ),
+            ),
+            SizedBox(width: 16),
+            Expanded(
+              child: _StatCard(
+                title: 'Nearby requests',
+                value: '5',
+                icon: Icons.location_on_outlined,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Quick actions'),
+        const SizedBox(height: 12),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          childAspectRatio: 1.4,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          children: const [
+            _ActionCard(
+              title: 'Post item',
+              subtitle: 'Share what you have',
+              icon: Icons.add_box_outlined,
+            ),
+            _ActionCard(
+              title: 'Request help',
+              subtitle: 'Ask the community',
+              icon: Icons.volunteer_activism_outlined,
+            ),
+            _ActionCard(
+              title: 'Messages',
+              subtitle: '4 new replies',
+              icon: Icons.chat_bubble_outline,
+            ),
+            _ActionCard(
+              title: 'Events',
+              subtitle: '2 nearby today',
+              icon: Icons.event_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Nearby items'),
+        const SizedBox(height: 12),
+        const _ItemCard(
+          title: 'Gently used bicycle',
+          distance: '0.8 km away',
+          category: 'Transport',
+          color: Color(0xFFE3F2FD),
+        ),
+        const _ItemCard(
+          title: 'Cookware set',
+          distance: '1.2 km away',
+          category: 'Home',
+          color: Color(0xFFF1F8E9),
+        ),
+        const _ItemCard(
+          title: 'Study desk',
+          distance: '1.7 km away',
+          category: 'Furniture',
+          color: Color(0xFFFFF3E0),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Community updates'),
+        const SizedBox(height: 12),
+        _UpdateTile(
+          title: 'Neighborhood clean-up drive',
+          subtitle: 'Tomorrow at 9:00 AM • Central Park',
+          icon: Icons.cleaning_services_outlined,
+        ),
+        _UpdateTile(
+          title: 'Free tutoring session',
+          subtitle: 'Saturday • 3 seats left',
+          icon: Icons.school_outlined,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF2C3E50),
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: const Text('See all'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7FB),
       appBar: AppBar(
@@ -106,173 +315,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C63FF), Color(0xFF9C8CFF)],
-              ),
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 18,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Good evening,',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Ready to explore your neighborhood?',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      FilledButton(
-                        onPressed: () {},
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF6C63FF),
-                        ),
-                        child: const Text('Discover now'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                CircleAvatar(
-                  radius: 32,
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  child: const Icon(
-                    Icons.explore,
-                    size: 32,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search nearby items, people, or events',
-              prefixIcon: const Icon(Icons.search),
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          const _SectionHeader(title: 'Your activity'),
-          const SizedBox(height: 12),
-          Row(
-            children: const [
-              Expanded(
-                child: _StatCard(
-                  title: 'Items shared',
-                  value: '12',
-                  icon: Icons.inventory_2_outlined,
-                ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: _StatCard(
-                  title: 'Nearby requests',
-                  value: '5',
-                  icon: Icons.location_on_outlined,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const _SectionHeader(title: 'Quick actions'),
-          const SizedBox(height: 12),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            childAspectRatio: 1.4,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            children: const [
-              _ActionCard(
-                title: 'Post item',
-                subtitle: 'Share what you have',
-                icon: Icons.add_box_outlined,
-              ),
-              _ActionCard(
-                title: 'Request help',
-                subtitle: 'Ask the community',
-                icon: Icons.volunteer_activism_outlined,
-              ),
-              _ActionCard(
-                title: 'Messages',
-                subtitle: '4 new replies',
-                icon: Icons.chat_bubble_outline,
-              ),
-              _ActionCard(
-                title: 'Events',
-                subtitle: '2 nearby today',
-                icon: Icons.event_outlined,
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const _SectionHeader(title: 'Nearby items'),
-          const SizedBox(height: 12),
-          const _ItemCard(
-            title: 'Gently used bicycle',
-            distance: '0.8 km away',
-            category: 'Transport',
-            color: Color(0xFFE3F2FD),
-          ),
-          const _ItemCard(
-            title: 'Cookware set',
-            distance: '1.2 km away',
-            category: 'Home',
-            color: Color(0xFFF1F8E9),
-          ),
-          const _ItemCard(
-            title: 'Study desk',
-            distance: '1.7 km away',
-            category: 'Furniture',
-            color: Color(0xFFFFF3E0),
-          ),
-          const SizedBox(height: 24),
-          const _SectionHeader(title: 'Community updates'),
-          const SizedBox(height: 12),
-          _UpdateTile(
-            title: 'Neighborhood clean-up drive',
-            subtitle: 'Tomorrow at 9:00 AM • Central Park',
-            icon: Icons.cleaning_services_outlined,
-          ),
-          _UpdateTile(
-            title: 'Free tutoring session',
-            subtitle: 'Saturday • 3 seats left',
-            icon: Icons.school_outlined,
-          ),
-        ],
-      ),
+      body: _buildBody(),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -327,33 +370,6 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF2C3E50),
-          ),
-        ),
-        TextButton(
-          onPressed: () {},
-          child: const Text('See all'),
-        ),
-      ],
     );
   }
 }
