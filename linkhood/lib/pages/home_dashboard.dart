@@ -16,7 +16,7 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
     });
 
     if (index != 0) {
-      final labels = ['Home', 'Explore', 'Post', 'Profile'];
+      final labels = ['Home', 'Search', 'Add', 'Inbox', 'Profile'];
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${labels[index]} feature coming soon!'),
@@ -24,6 +24,58 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
         ),
       );
     }
+  }
+
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    bool showBadge = false,
+  }) {
+    final isSelected = _currentIndex == index;
+    const activeColor = Color(0xFF20E3B2);
+    const inactiveColor = Color(0xFFB0B7C3);
+
+    return InkWell(
+      onTap: () => _onBottomNavTap(index),
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  size: 24,
+                  color: isSelected ? activeColor : inactiveColor,
+                ),
+                if (showBadge)
+                  const Positioned(
+                    top: -2,
+                    right: -2,
+                    child: CircleAvatar(
+                      radius: 4,
+                      backgroundColor: Colors.redAccent,
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? activeColor : inactiveColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -221,29 +273,59 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTap,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF6C63FF),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 18,
+              offset: const Offset(0, -6),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildNavItem(
+                icon: Icons.home_outlined,
+                label: 'Home',
+                index: 0,
+              ),
+              _buildNavItem(
+                icon: Icons.search,
+                label: 'Search',
+                index: 1,
+              ),
+              InkWell(
+                onTap: () => _onBottomNavTap(2),
+                borderRadius: BorderRadius.circular(28),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF20E3B2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 28),
+                ),
+              ),
+              _buildNavItem(
+                icon: Icons.inbox_outlined,
+                label: 'Inbox',
+                index: 3,
+                showBadge: true,
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                label: 'Profile',
+                index: 4,
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore_outlined),
-            label: 'Explore',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            label: 'Post',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
+        ),
       ),
     );
   }
