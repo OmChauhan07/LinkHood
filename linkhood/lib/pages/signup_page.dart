@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -26,26 +27,42 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
-  void _handleSignup() {
+  void _handleSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
       });
 
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
+      final authService = AuthService();
+      final result = await authService.signup(
+        _nameController.text,
+        _emailController.text,
+        _passwordController.text,
+        '', // Phone optional
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (result['success']) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Account created successfully!'),
             backgroundColor: Colors.green,
           ),
         );
-        // Navigate to home page
         Navigator.of(context).pushReplacementNamed('/home');
-      });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Signup failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

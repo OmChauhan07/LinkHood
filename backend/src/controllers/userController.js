@@ -44,6 +44,7 @@ const signup = async (req, res) => {
       user: sanitizeUser(newUser),
     });
   } catch (error) {
+    require('fs').writeFileSync('debug_error.log', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     if (error.code === 'P2002') {
       return res.status(400).json({ error: 'Email or phone already exists in this neighborhood.' });
     }
