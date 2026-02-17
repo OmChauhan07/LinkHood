@@ -15,7 +15,8 @@ const sanitizeUser = (user) => {
 };
 
 const signup = async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password } = req.body;
+  const phone = req.body.phone || null; // treat empty string as null
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Name, email, and password are required.' });
@@ -24,12 +25,12 @@ const signup = async (req, res) => {
   try {
     const existing = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, phone ? { phone } : undefined].filter(Boolean),
+        OR: [{ email }, ...(phone ? [{ phone }] : [])],
       },
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'User with this email or phone already exists.' });
+      return res.status(400).json({ error: 'A user with this email already exists.' });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -46,7 +47,7 @@ const signup = async (req, res) => {
   } catch (error) {
     require('fs').writeFileSync('debug_error.log', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     if (error.code === 'P2002') {
-      return res.status(400).json({ error: 'Email or phone already exists in this neighborhood.' });
+      return res.status(400).json({ error: 'This email is already registered.' });
     }
     res.status(500).json({ error: 'Something went wrong during signup.' });
   }
