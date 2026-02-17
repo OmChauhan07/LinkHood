@@ -17,6 +17,16 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
   double? _lng;
   String? _errorMessage;
   double _radius = 1000; // default 1km
+  bool _showManualInput = false;
+  final _latController = TextEditingController();
+  final _lngController = TextEditingController();
+
+  @override
+  void dispose() {
+    _latController.dispose();
+    _lngController.dispose();
+    super.dispose();
+  }
 
   Future<void> _detectLocation() async {
     setState(() {
@@ -41,8 +51,38 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
       setState(() {
         _errorMessage = e.toString().replaceFirst('Exception: ', '');
         _isLoading = false;
+        _showManualInput = true; // Show manual input on GPS failure
       });
     }
+  }
+
+  Future<void> _applyManualLocation() async {
+    final lat = double.tryParse(_latController.text);
+    final lng = double.tryParse(_lngController.text);
+
+    if (lat == null || lng == null) {
+      setState(() => _errorMessage = 'Please enter valid latitude and longitude values.');
+      return;
+    }
+
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      setState(() => _errorMessage = 'Latitude must be -90 to 90, longitude -180 to 180.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final address = await _locationService.getAddressFromCoordinates(lat, lng);
+
+    setState(() {
+      _lat = lat;
+      _lng = lng;
+      _address = address;
+      _isLoading = false;
+    });
   }
 
   Future<void> _confirmLocation() async {
@@ -82,81 +122,78 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
         title: const Text('Set Your Location'),
         centerTitle: true,
         actions: [
-          if (_lat != null)
-            TextButton(
-              onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
-              child: const Text('Skip'),
-            ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
+            child: const Text('Skip'),
+          ),
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           child: Column(
             children: [
               // Hero illustration area
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF6C63FF), Color(0xFF9C8CFF)],
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF6C63FF).withOpacity(0.3),
-                        blurRadius: 24,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF6C63FF), Color(0xFF9C8CFF)],
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        size: 64,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6C63FF).withOpacity(0.3),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 64,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      _address != null
+                          ? 'Your location'
+                          : 'Where are you?',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _address != null
-                            ? 'Your location'
-                            : 'Where are you?',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _address ??
+                          'Set your location to discover nearby requests and connect with your community.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.85),
+                        height: 1.5,
                       ),
-                      const SizedBox(height: 12),
+                    ),
+                    if (_lat != null && _lng != null) ...[
+                      const SizedBox(height: 8),
                       Text(
-                        _address ??
-                            'Set your location to discover nearby requests and connect with your community.',
-                        textAlign: TextAlign.center,
+                        '${_lat!.toStringAsFixed(4)}°, ${_lng!.toStringAsFixed(4)}°',
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.85),
-                          height: 1.5,
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.6),
+                          fontFamily: 'monospace',
                         ),
                       ),
-                      if (_lat != null && _lng != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          '${_lat!.toStringAsFixed(4)}°, ${_lng!.toStringAsFixed(4)}°',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.6),
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
               ),
 
@@ -185,6 +222,94 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
                     ],
                   ),
                 ),
+
+              // Manual coordinate input (shown on GPS failure or toggle)
+              if (_showManualInput) ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Enter coordinates manually',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2C3E50),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Tip: Search your location on Google Maps, right-click and copy the coordinates.',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF7F8C8D)),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _latController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                              decoration: InputDecoration(
+                                labelText: 'Latitude',
+                                hintText: 'e.g. 23.0225',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: _lngController,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                              decoration: InputDecoration(
+                                labelText: 'Longitude',
+                                hintText: 'e.g. 72.5714',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _applyManualLocation,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6C63FF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Set this location',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Radius slider
               if (_lat != null) ...[
@@ -247,87 +372,87 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
               ],
 
               // Buttons
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // Detect location button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: _isLoading ? null : _detectLocation,
-                        icon: _isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.my_location, color: Colors.white),
-                        label: Text(
-                          _isLoading
-                              ? 'Detecting...'
-                              : _lat != null
-                                  ? 'Re-detect location'
-                                  : 'Use my current location',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+              // Detect location button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  onPressed: _isLoading ? null : _detectLocation,
+                  icon: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
                             color: Colors.white,
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _lat != null
-                              ? const Color(0xFF7F8C8D)
-                              : const Color(0xFF6C63FF),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
+                        )
+                      : const Icon(Icons.my_location, color: Colors.white),
+                  label: Text(
+                    _isLoading
+                        ? 'Detecting...'
+                        : _lat != null
+                            ? 'Re-detect location'
+                            : 'Use my current location',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
                     ),
-
-                    if (_lat != null) ...[
-                      const SizedBox(height: 12),
-                      // Confirm button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: _isSaving ? null : _confirmLocation,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF20E3B2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                          ),
-                          child: _isSaving
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'Confirm & Continue',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ],
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _lat != null
+                        ? const Color(0xFF7F8C8D)
+                        : const Color(0xFF6C63FF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
                 ),
               ),
+
+              // Manual input toggle
+              if (!_showManualInput)
+                TextButton.icon(
+                  onPressed: () => setState(() => _showManualInput = true),
+                  icon: const Icon(Icons.edit_location_alt, size: 18),
+                  label: const Text('Enter coordinates manually'),
+                ),
+
+              if (_lat != null) ...[
+                const SizedBox(height: 12),
+                // Confirm button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _isSaving ? null : _confirmLocation,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF20E3B2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Confirm & Continue',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
