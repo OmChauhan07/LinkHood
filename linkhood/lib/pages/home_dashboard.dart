@@ -34,11 +34,12 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
       _userLat = saved['lat'];
       _userLng = saved['lng'];
 
-      // Get address for display
-      final address = await _locationService.getAddressFromCoordinates(
-        _userLat!,
-        _userLng!,
-      );
+      // Get saved address for display
+      final address = await _locationService.getSavedAddress() ??
+          await _locationService.getAddressFromCoordinates(
+            _userLat!,
+            _userLng!,
+          );
 
       // Fetch nearby requests
       final result = await _locationService.fetchNearbyRequests(

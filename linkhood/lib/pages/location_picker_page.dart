@@ -90,7 +90,7 @@ class _LocationPickerPageState extends State<LocationPickerPage> {
 
     setState(() => _isSaving = true);
 
-    final result = await _locationService.saveLocationToBackend(_lat!, _lng!);
+    final result = await _locationService.saveLocationToBackend(_lat!, _lng!, address: _address);
 
     setState(() => _isSaving = false);
 

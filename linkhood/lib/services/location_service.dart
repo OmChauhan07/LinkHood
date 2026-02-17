@@ -35,28 +35,33 @@ class LocationService {
     );
   }
 
-  /// Reverse geocode lat/lng to a human-readable address
+  /// Reverse geocode lat/lng to a short place name (like Google Maps)
   Future<String> getAddressFromCoordinates(double lat, double lng) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
-        final parts = [
-          p.street,
-          p.subLocality,
-          p.locality,
-          p.administrativeArea,
-        ].where((s) => s != null && s.isNotEmpty).toList();
-        return parts.join(', ');
+        // Use subLocality (area/neighborhood) + locality (city) for a map-like name
+        final area = p.subLocality ?? p.name;
+        final city = p.locality;
+        if (area != null && area.isNotEmpty && city != null && city.isNotEmpty && area != city) {
+          return '$area, $city';
+        } else if (city != null && city.isNotEmpty) {
+          return city;
+        } else if (area != null && area.isNotEmpty) {
+          return area;
+        } else if (p.administrativeArea != null && p.administrativeArea!.isNotEmpty) {
+          return p.administrativeArea!;
+        }
       }
       return 'Unknown location';
     } catch (e) {
-      return 'Could not determine address';
+      return 'Could not determine location';
     }
   }
 
   /// Save user's location to the backend
-  Future<Map<String, dynamic>> saveLocationToBackend(double lat, double lng) async {
+  Future<Map<String, dynamic>> saveLocationToBackend(double lat, double lng, {String? address}) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
 
@@ -80,6 +85,9 @@ class LocationService {
         // Save location locally for future use
         await prefs.setDouble('user_lat', lat);
         await prefs.setDouble('user_lng', lng);
+        if (address != null) {
+          await prefs.setString('user_address', address);
+        }
         return {'success': true, 'data': data};
       } else {
         return {'success': false, 'message': data['error'] ?? 'Failed to save location'};
@@ -118,5 +126,11 @@ class LocationService {
       return {'lat': lat, 'lng': lng};
     }
     return null;
+  }
+
+  /// Get saved address string
+  Future<String?> getSavedAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_address');
   }
 }
