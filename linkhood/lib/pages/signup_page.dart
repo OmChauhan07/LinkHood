@@ -54,7 +54,7 @@ class _SignupPageState extends State<SignupPage> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/location-picker');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
