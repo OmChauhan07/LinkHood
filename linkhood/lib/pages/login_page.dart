@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/location_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -47,7 +48,14 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pushReplacementNamed('/home');
+        // Check if user has a saved location
+        final locationService = LocationService();
+        final savedLocation = await locationService.getSavedLocation();
+        if (savedLocation != null) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        } else {
+          Navigator.of(context).pushReplacementNamed('/location-picker');
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

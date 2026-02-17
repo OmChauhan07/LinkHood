@@ -89,4 +89,25 @@ const me = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, me };
+const updateLocation = async (req, res) => {
+  const { lat, lng } = req.body;
+
+  if (lat == null || lng == null) {
+    return res.status(400).json({ error: 'lat and lng are required.' });
+  }
+
+  try {
+    await prisma.$executeRaw`
+      UPDATE "User"
+      SET location = ST_SetSRID(ST_MakePoint(${parseFloat(lng)}, ${parseFloat(lat)}), 4326)::geography
+      WHERE id = ${req.userId}
+    `;
+
+    res.json({ success: true, message: 'Location updated! 📍' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update location.' });
+  }
+};
+
+module.exports = { signup, login, me, updateLocation };

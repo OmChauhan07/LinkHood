@@ -39,7 +39,7 @@ const getItemsNearMe = async (req, res) => {
       WHERE ST_DWithin(location, ST_MakePoint(${parseFloat(lng)}, ${parseFloat(lat)})::geography, ${parseInt(radius)})
       ORDER BY distance ASC
     `;
-    
+
     res.json({ success: true, count: items.length, data: items });
   } catch (error) {
     console.error(error);
@@ -47,7 +47,42 @@ const getItemsNearMe = async (req, res) => {
   }
 };
 
-module.exports = { 
-  createItem, 
-  getItemsNearMe
+const getNearbyRequests = async (req, res) => {
+  const { lat, lng, radius = 1000 } = req.query;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ error: 'lat and lng query params are required.' });
+  }
+
+  const radiusNum = Math.max(500, Math.min(parseInt(radius), 5000));
+
+  try {
+    const requests = await prisma.$queryRaw`
+      SELECT 
+        i.id, 
+        i.title, 
+        i.description, 
+        i.category,
+        i."createdAt",
+        i."ownerId",
+        u.name as "ownerName",
+        ST_Distance(i.location, ST_MakePoint(${parseFloat(lng)}, ${parseFloat(lat)})::geography) as distance 
+      FROM "Item" i
+      JOIN "User" u ON i."ownerId" = u.id
+      WHERE i.category = 'Request'
+        AND ST_DWithin(i.location, ST_MakePoint(${parseFloat(lng)}, ${parseFloat(lat)})::geography, ${radiusNum})
+      ORDER BY distance ASC
+    `;
+
+    res.json({ success: true, count: requests.length, data: requests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch nearby requests.' });
+  }
+};
+
+module.exports = {
+  createItem,
+  getItemsNearMe,
+  getNearbyRequests
 };

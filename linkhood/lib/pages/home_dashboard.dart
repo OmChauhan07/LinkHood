@@ -4,6 +4,7 @@ import 'search_page.dart';
 import 'add_page.dart';
 import 'inbox_page.dart';
 import 'profile_page.dart';
+import '../services/location_service.dart';
 
 class HomeDashboardPage extends StatefulWidget {
   const HomeDashboardPage({super.key});
@@ -14,6 +15,52 @@ class HomeDashboardPage extends StatefulWidget {
 
 class _HomeDashboardPageState extends State<HomeDashboardPage> {
   int _currentIndex = 0;
+  final LocationService _locationService = LocationService();
+  List<dynamic> _nearbyRequests = [];
+  bool _isLoadingRequests = true;
+  String? _userAddress;
+  double? _userLat;
+  double? _userLng;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNearbyRequests();
+  }
+
+  Future<void> _loadNearbyRequests() async {
+    final saved = await _locationService.getSavedLocation();
+    if (saved != null) {
+      _userLat = saved['lat'];
+      _userLng = saved['lng'];
+
+      // Get address for display
+      final address = await _locationService.getAddressFromCoordinates(
+        _userLat!,
+        _userLng!,
+      );
+
+      // Fetch nearby requests
+      final result = await _locationService.fetchNearbyRequests(
+        _userLat!,
+        _userLng!,
+      );
+
+      if (mounted) {
+        setState(() {
+          _userAddress = address;
+          if (result['success'] == true) {
+            _nearbyRequests = result['data']['data'] ?? [];
+          }
+          _isLoadingRequests = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() => _isLoadingRequests = false);
+      }
+    }
+  }
 
   void _onBottomNavTap(int index) {
     setState(() {
@@ -125,10 +172,14 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Good evening,',
+                      _userAddress != null
+                          ? '📍 $_userAddress'
+                          : 'Good evening,',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.white70,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -140,12 +191,14 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
                     ),
                     const SizedBox(height: 16),
                     FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/location-picker');
+                      },
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF6C63FF),
                       ),
-                      child: const Text('Discover now'),
+                      child: Text(_userAddress != null ? 'Change location' : 'Set location'),
                     ),
                   ],
                 ),
@@ -232,26 +285,76 @@ class _HomeDashboardPageState extends State<HomeDashboardPage> {
           ],
         ),
         const SizedBox(height: 24),
-        _buildSectionHeader('Nearby items'),
+        _buildSectionHeader('Nearby requests'),
         const SizedBox(height: 12),
-        const _ItemCard(
-          title: 'Gently used bicycle',
-          distance: '0.8 km away',
-          category: 'Transport',
-          color: Color(0xFFE3F2FD),
-        ),
-        const _ItemCard(
-          title: 'Cookware set',
-          distance: '1.2 km away',
-          category: 'Home',
-          color: Color(0xFFF1F8E9),
-        ),
-        const _ItemCard(
-          title: 'Study desk',
-          distance: '1.7 km away',
-          category: 'Furniture',
-          color: Color(0xFFFFF3E0),
-        ),
+        if (_isLoadingRequests)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (_userLat == null)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.location_off, size: 40, color: Color(0xFFB0B7C3)),
+                const SizedBox(height: 12),
+                const Text(
+                  'Set your location to see nearby requests',
+                  style: TextStyle(color: Color(0xFF7F8C8D)),
+                ),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/location-picker');
+                  },
+                  child: const Text('Set location'),
+                ),
+              ],
+            ),
+          )
+        else if (_nearbyRequests.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Column(
+              children: [
+                Icon(Icons.search_off, size: 40, color: Color(0xFFB0B7C3)),
+                SizedBox(height: 12),
+                Text(
+                  'No requests nearby yet. Be the first to post one!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFF7F8C8D)),
+                ),
+              ],
+            ),
+          )
+        else
+          ..._nearbyRequests.map((req) {
+            final distance = req['distance'];
+            final distStr = distance != null
+                ? distance is num
+                    ? distance >= 1000
+                        ? '${(distance / 1000).toStringAsFixed(1)} km away'
+                        : '${distance.toInt()} m away'
+                    : '$distance m away'
+                : 'Nearby';
+            return _ItemCard(
+              title: req['title'] ?? 'Untitled',
+              distance: distStr,
+              category: req['ownerName'] ?? 'Request',
+              color: const Color(0xFFF3E5F5),
+            );
+          }),
         const SizedBox(height: 24),
         _buildSectionHeader('Community updates'),
         const SizedBox(height: 12),

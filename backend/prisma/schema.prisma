@@ -19,9 +19,15 @@ model User {
   passwordHash String
   phone     String?  @unique
   karma     Int      @default(0)
+  
+  // PostGIS location point (user's selected location)
+  location  Unsupported("geography(Point, 4326)")?
+
   items     Item[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([location], name: "user_location_idx", type: Gist)
 }
 
 model Item {

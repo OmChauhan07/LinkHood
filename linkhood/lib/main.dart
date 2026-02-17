@@ -4,6 +4,7 @@ import 'pages/welcome_page.dart';
 import 'pages/login_page.dart';
 import 'pages/signup_page.dart';
 import 'pages/home_dashboard.dart';
+import 'pages/location_picker_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/home': (context) => const HomeDashboardPage(),
+        '/location-picker': (context) => const LocationPickerPage(),
       },
     );
   }
