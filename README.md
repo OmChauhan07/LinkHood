@@ -8,20 +8,15 @@
 
 ## 🏷️ Tech Tags
 
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge&logo=express&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![PostGIS](https://img.shields.io/badge/PostGIS-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
-![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io&badgeColor=010101)
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![REST API](https://img.shields.io/badge/REST-02569B?style=for-the-badge&logo=rest&logoColor=white)
-![WebSocket](https://img.shields.io/badge/WebSocket-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Riverpod](https://img.shields.io/badge/Riverpod-0EA5E9?style=for-the-badge&logo=flutter&logoColor=white)
+![Go%20Router](https://img.shields.io/badge/Go_Router-1F2937?style=for-the-badge&logo=flutter&logoColor=white)
+![Hive](https://img.shields.io/badge/Hive-FFB300?style=for-the-badge&logo=databricks&logoColor=white)
+![Sqflite](https://img.shields.io/badge/Sqflite-0F766E?style=for-the-badge&logo=sqlite&logoColor=white)
+![Google%20Sign-In](https://img.shields.io/badge/Google_Sign--In-4285F4?style=for-the-badge&logo=google&logoColor=white)
 ![Geolocation](https://img.shields.io/badge/Geolocation-4285F4?style=for-the-badge&logo=google-maps&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)
 
 ---
@@ -41,13 +36,13 @@ Our platform operates on a **positivity-only** philosophy, fostering genuine con
 
 ## 🛠️ Tech Stack
 
-- **Backend Framework:** Node.js with Express.js
-- **Database:** PostgreSQL with PostGIS extension
-- **ORM:** Prisma ORM with TypedSQL
-- **Real-time Communication:** Socket.io
-- **Mobile Application:** Flutter (iOS & Android)
-- **Geospatial Processing:** PostGIS for location-based queries
-- **Authentication:** JWT-based authentication system
+- **Mobile Application:** Flutter (iOS, Android, Web, Windows)
+- **Language:** Dart (SDK `^3.10.7`)
+- **State Management:** Riverpod
+- **Navigation:** Go Router
+- **Backend Integration:** Supabase
+- **Local Storage:** Hive, Sqflite, Shared Preferences, Secure Storage
+- **Location Services:** Geolocator + Geocoding
 
 ---
 
@@ -55,48 +50,48 @@ Our platform operates on a **positivity-only** philosophy, fostering genuine con
 
 ```
 linkhood/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   ├── itemController.js
-│   │   │   ├── userController.js
-│   │   │   └── alertController.js
-│   │   ├── routes/
-│   │   │   ├── items.js
-│   │   │   ├── users.js
-│   │   │   └── alerts.js
-│   │   ├── middleware/
-│   │   │   ├── auth.js
-│   │   │   └── validation.js
-│   │   ├── services/
-│   │   │   ├── geospatial.js
-│   │   │   ├── karma.js
-│   │   │   └── socket.js
-│   │   ├── prisma/
-│   │   │   ├── schema.prisma
-│   │   │   └── migrations/
-│   │   └── server.js
-│   ├── package.json
-│   └── .env.example
-├── mobile/
-│   ├── lib/
-│   │   ├── screens/
-│   │   │   ├── home_screen.dart
-│   │   │   ├── map_screen.dart
-│   │   │   └── profile_screen.dart
-│   │   ├── widgets/
-│   │   │   ├── item_card.dart
-│   │   │   └── alert_banner.dart
-│   │   ├── services/
-│   │   │   ├── api_service.dart
-│   │   │   └── socket_service.dart
-│   │   └── main.dart
-│   ├── pubspec.yaml
-│   └── android/
-│       └── ios/
+├── android/
+├── ios/
+├── web/
+├── windows/
+├── assets/
+│   ├── icons/
+│   └── images/
 ├── docs/
-│   ├── API.md
-│   └── DEPLOYMENT.md
+│   ├── api-contracts.md
+│   ├── Architecture.md
+│   ├── database-schema.md
+│   ├── PRD.md
+│   ├── system-architecture.md
+│   └── testing-strategy.md
+├── lib/
+│   ├── core/
+│   │   ├── constants/
+│   │   ├── errors/
+│   │   ├── theme/
+│   │   ├── utils/
+│   │   └── widgets/
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── home/
+│   │   ├── listings/
+│   │   ├── notifications/
+│   │   ├── profile/
+│   │   ├── ratings/
+│   │   ├── rentals/
+│   │   ├── reports/
+│   │   └── requests/
+│   ├── routes/
+│   │   └── app_router.dart
+│   ├── services/
+│   │   ├── location_service.dart
+│   │   ├── notification_service.dart
+│   │   └── supabase_service.dart
+│   └── main.dart
+├── test/
+├── analysis_options.yaml
+├── pubspec.yaml
+├── pubspec.lock
 └── README.md
 ```
 
@@ -132,57 +127,16 @@ linkhood/
 ## 🚀 Installation Guide
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- PostgreSQL (v14 or higher) with PostGIS extension
-- Flutter SDK (v3.0 or higher)
-- npm or yarn package manager
+- Flutter SDK (compatible with Dart `^3.10.7`)
+- Android Studio / VS Code with Flutter tools
+- Supabase project (URL + anon key)
 
-### Backend Setup
+### App Setup
 
 1. **Clone the repository**
 ```bash
 git clone https://github.com/yourusername/linkhood.git
-cd linkhood/backend
-```
-
-2. **Install dependencies**
-```bash
-npm install
-```
-
-3. **Configure environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your database credentials and API keys
-```
-
-4. **Enable PostGIS extension**
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
-```
-
-5. **Run database migrations**
-```bash
-npx prisma migrate dev
-```
-
-6. **Seed initial data (optional)**
-```bash
-npm run seed
-```
-
-7. **Start the development server**
-```bash
-npm run dev
-```
-
-The backend server will start on `http://localhost:3000`
-
-### Mobile App Setup
-
-1. **Navigate to mobile directory**
-```bash
-cd ../mobile
+cd linkhood
 ```
 
 2. **Install Flutter dependencies**
@@ -190,80 +144,51 @@ cd ../mobile
 flutter pub get
 ```
 
-3. **Run the app**
+3. **Create `.env` in project root**
+```env
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. **Run the app**
 ```bash
 flutter run
+```
+
+5. **Run checks (recommended)**
+```bash
+flutter analyze
+flutter test
 ```
 
 ---
 
 ## 📡 API Documentation
 
-### Core Endpoints
+Current API contracts and backend interaction references are maintained in:
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| **GET** | `/api/items/nearby` | Fetch items within user's geofenced area (500m-1km radius) | ✅ Yes |
-| **POST** | `/api/items/post` | Create a new lending item with location, category, and availability | ✅ Yes |
-| **POST** | `/api/users/signup` | Register new user with location permissions and profile details | ❌ No |
-| **GET** | `/api/users/profile/:id` | Retrieve user profile with karma score and lending history | ✅ Yes |
-| **POST** | `/api/alerts/create` | Broadcast real-time mutual aid alert to nearby neighbors | ✅ Yes |
-| **GET** | `/api/alerts/nearby` | Fetch active alerts within walking distance | ✅ Yes |
-| **PUT** | `/api/items/:id/status` | Update item availability status (available, borrowed, returned) | ✅ Yes |
-| **POST** | `/api/karma/endorse` | Give positive karma to another community member | ✅ Yes |
+- `docs/api-contracts.md`
+- `docs/system-architecture.md`
+- `docs/database-schema.md`
 
-### Example Request: Get Nearby Items
-
-```bash
-GET /api/items/nearby?lat=37.7749&lng=-122.4194&radius=800
-Authorization: Bearer <your_jwt_token>
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "items": [
-    {
-      "id": "item_123",
-      "name": "Power Drill",
-      "category": "Tools",
-      "owner": {
-        "id": "user_456",
-        "name": "John Doe",
-        "karma": 95
-      },
-      "distance": 340,
-      "available": true,
-      "imageUrl": "https://..."
-    }
-  ]
-}
-```
+This repository currently focuses on the Flutter client implementation and integration with Supabase.
 
 ---
 
 ## 🌍 Geospatial Implementation
 
-LinkHood leverages **PostGIS**, a spatial database extension for PostgreSQL, to implement precise location-based features:
+LinkHood uses device location services and radius-based neighborhood discovery flows in the mobile client.
 
-### Walking Distance Logic
+### Current Approach
 
-Our geofencing system uses PostGIS's `ST_DWithin` function to calculate spherical distance in meters:
-
-```sql
-SELECT * FROM items 
-WHERE ST_DWithin(
-  location::geography,
-  ST_SetSRID(ST_MakePoint(lng, lat), 4326)::geography,
-  1000  -- 1km radius
-);
-```
+- Geolocation via `geolocator`
+- Reverse geocoding via `geocoding`
+- Hyperlocal filtering logic documented in `docs/scoring-engine-spec.md` and `docs/api-contracts.md`
 
 **Key Benefits:**
-- **Accuracy:** Geography type accounts for Earth's curvature
-- **Performance:** Spatial indexes (GIST) enable sub-millisecond queries
-- **Flexibility:** Dynamic radius adjustment (500m-1km based on density)
+- **Relevance:** Neighborhood-first discovery by proximity
+- **Privacy:** Focused on local context rather than global exposure
+- **Flexibility:** Radius and scoring behavior can be tuned by product rules
 
 ### Location Privacy
 
